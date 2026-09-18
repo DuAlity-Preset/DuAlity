@@ -1,56 +1,1171 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>DuAlity — Buy. Sell. Create.</title>
 <meta name="description" content="DuAlity — a modern marketplace for creators and buyers.">
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f7f7f5;color:#111}
-a{text-decoration:none;color:inherit}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 6%;background:#fff;border-bottom:1px solid #e8e8e5;position:sticky;top:0;z-index:5}
-.logo{font-size:25px;font-weight:800;letter-spacing:-1.2px}.logo span{font-weight:400}.links{display:flex;gap:28px;color:#555;font-size:14px}.actions{display:flex;gap:10px;align-items:center}.btn{border:1px solid #ddd;background:#fff;border-radius:10px;padding:11px 16px;font-weight:650;cursor:pointer}.btn.dark{background:#111;color:#fff;border-color:#111}
-.hero{padding:90px 6% 70px;background:linear-gradient(135deg,#fff 0%,#f1f0ec 100%);display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
-.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:11px;color:#777;font-weight:800}.hero h1{font-size:clamp(48px,7vw,88px);line-height:.95;letter-spacing:-5px;margin:16px 0 24px;max-width:700px}.hero p{font-size:18px;line-height:1.6;color:#666;max-width:570px}.heroBtns{display:flex;gap:12px;margin-top:30px}.visual{height:430px;border-radius:28px;background:#111;position:relative;overflow:hidden;box-shadow:0 30px 80px #0002}.orb{position:absolute;width:330px;height:330px;border-radius:50%;background:linear-gradient(145deg,#d7d1c6,#706b64);top:45px;right:35px;filter:blur(.2px)}.card{position:absolute;background:#fff;border-radius:18px;padding:22px;box-shadow:0 20px 50px #0004}.card.one{left:28px;bottom:34px;width:210px}.card.two{right:30px;bottom:25px;width:150px;background:#222;color:#fff}.mini{font-size:11px;color:#888}.price{font-size:23px;font-weight:800;margin-top:6px}
-section{padding:70px 6%}.sectionHead{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px}.sectionHead h2{font-size:34px;letter-spacing:-1.5px;margin:0}.muted{color:#777}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.product{background:#fff;border:1px solid #e7e7e3;border-radius:18px;overflow:hidden;transition:.2s}.product:hover{transform:translateY(-3px);box-shadow:0 14px 30px #0000000d}.thumb{height:220px;background:linear-gradient(135deg,#242424,#b7afa4);display:flex;align-items:end;padding:16px;color:#fff;font-weight:800}.product:nth-child(2) .thumb{background:linear-gradient(135deg,#ddd8cf,#5e5a56)}.product:nth-child(3) .thumb{background:linear-gradient(135deg,#16191b,#8c9a94)}.product:nth-child(4) .thumb{background:linear-gradient(135deg,#2b2023,#d2b5a0)}.info{padding:16px}.info h3{margin:0 0 6px;font-size:16px}.info p{margin:0;color:#777;font-size:13px}.row{display:flex;justify-content:space-between;align-items:center;margin-top:13px}.tag{font-size:11px;background:#f0f0ed;padding:6px 9px;border-radius:20px}.priceSmall{font-weight:800}
-.categories{display:flex;gap:12px;flex-wrap:wrap}.cat{background:#fff;border:1px solid #e2e2df;border-radius:999px;padding:13px 18px;color:#444}
-.sell{background:#111;color:#fff;border-radius:26px;padding:60px;display:flex;justify-content:space-between;align-items:center;gap:30px}.sell h2{font-size:42px;letter-spacing:-2px;margin:0 0 12px}.sell p{color:#aaa;max-width:570px;line-height:1.6}.sell .btn{background:#fff;color:#111;border:0}
-footer{padding:35px 6%;display:flex;justify-content:space-between;color:#777;font-size:13px;border-top:1px solid #e5e5e1}
-@media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.links{display:none}.sell{flex-direction:column;align-items:flex-start}}
-@media(max-width:560px){.grid{grid-template-columns:1fr}.hero{padding-top:55px}.hero h1{letter-spacing:-3px}.visual{height:330px}.sell{padding:35px}.sell h2{font-size:32px}}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f7f7f5;
+  color:#111
+}
+
+a{text-decoration:none;color:inherit}
+
+.nav{
+  height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 6%;
+  background:#fff;
+  border-bottom:1px solid #e8e8e5;
+  position:sticky;
+  top:0;
+  z-index:5
+}
+
+.logo{
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-1.2px
+}
+
+.logo span{font-weight:400}
+
+.links{
+  display:flex;
+  gap:28px;
+  color:#555;
+  font-size:14px
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  align-items:center
+}
+
+.btn{
+  border:1px solid #ddd;
+  background:#fff;
+  border-radius:10px;
+  padding:11px 16px;
+  font-weight:650;
+  cursor:pointer
+}
+
+.btn.dark{
+  background:#111;
+  color:#fff;
+  border-color:#111
+}
+
+.hero{
+  padding:90px 6% 70px;
+  background:linear-gradient(135deg,#fff 0%,#f1f0ec 100%);
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:60px;
+  align-items:center
+}
+
+.eyebrow{
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-size:11px;
+  color:#777;
+  font-weight:800
+}
+
+.hero h1{
+  font-size:clamp(48px,7vw,88px);
+  line-height:.95;
+  letter-spacing:-5px;
+  margin:16px 0 24px;
+  max-width:700px
+}
+
+.hero p{
+  font-size:18px;
+  line-height:1.6;
+  color:#666;
+  max-width:570px
+}
+
+.heroBtns{
+  display:flex;
+  gap:12px;
+  margin-top:30px
+}
+
+.visual{
+  height:430px;
+  border-radius:28px;
+  background:#111;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 30px 80px #0002
+}
+
+.orb{
+  position:absolute;
+  width:330px;
+  height:330px;
+  border-radius:50%;
+  background:linear-gradient(145deg,#d7d1c6,#706b64);
+  top:45px;
+  right:35px;
+  filter:blur(.2px)
+}
+
+.card{
+  position:absolute;
+  background:#fff;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 20px 50px #0004
+}
+
+.card.one{
+  left:28px;
+  bottom:34px;
+  width:210px
+}
+
+.card.two{
+  right:30px;
+  bottom:25px;
+  width:150px;
+  background:#222;
+  color:#fff
+}
+
+.mini{
+  font-size:11px;
+  color:#888
+}
+
+.price{
+  font-size:23px;
+  font-weight:800;
+  margin-top:6px
+}
+
+section{
+  padding:70px 6%
+}
+
+.sectionHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin-bottom:28px
+}
+
+.sectionHead h2{
+  font-size:34px;
+  letter-spacing:-1.5px;
+  margin:0
+}
+
+.muted{color:#777}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px
+}
+
+.product{
+  background:#fff;
+  border:1px solid #e7e7e3;
+  border-radius:18px;
+  overflow:hidden;
+  transition:.2s
+}
+
+.product:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 30px #0000000d
+}
+
+.thumb{
+  height:220px;
+  background:linear-gradient(135deg,#242424,#b7afa4);
+  display:flex;
+  align-items:end;
+  padding:16px;
+  color:#fff;
+  font-weight:800
+}
+
+.product:nth-child(2) .thumb{
+  background:linear-gradient(135deg,#ddd8cf,#5e5a56)
+}
+
+.product:nth-child(3) .thumb{
+  background:linear-gradient(135deg,#16191b,#8c9a94)
+}
+
+.product:nth-child(4) .thumb{
+  background:linear-gradient(135deg,#2b2023,#d2b5a0)
+}
+
+.info{
+  padding:16px
+}
+
+.info h3{
+  margin:0 0 6px;
+  font-size:16px
+}
+
+.info p{
+  margin:0;
+  color:#777;
+  font-size:13px
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:13px
+}
+
+.tag{
+  font-size:11px;
+  background:#f0f0ed;
+  padding:6px 9px;
+  border-radius:20px
+}
+
+.priceSmall{
+  font-weight:800
+}
+
+.categories{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap
+}
+
+.cat{
+  background:#fff;
+  border:1px solid #e2e2df;
+  border-radius:999px;
+  padding:13px 18px;
+  color:#444
+}
+
+.sell{
+  background:#111;
+  color:#fff;
+  border-radius:26px;
+  padding:60px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:30px
+}
+
+.sell h2{
+  font-size:42px;
+  letter-spacing:-2px;
+  margin:0 0 12px
+}
+
+.sell p{
+  color:#aaa;
+  max-width:570px;
+  line-height:1.6
+}
+
+.sell .btn{
+  background:#fff;
+  color:#111;
+  border:0
+}
+
+footer{
+  padding:35px 6%;
+  display:flex;
+  justify-content:space-between;
+  color:#777;
+  font-size:13px;
+  border-top:1px solid #e5e5e1
+}
+
+/* MODAL DE AUTENTICACIÓN */
+
+.authOverlay{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:100
+}
+
+.authBox{
+  width:min(420px,92%);
+  background:#fff;
+  border-radius:22px;
+  padding:30px;
+  box-shadow:0 30px 100px #0005;
+  position:relative
+}
+
+.authClose{
+  position:absolute;
+  right:18px;
+  top:15px;
+  border:0;
+  background:none;
+  font-size:25px;
+  cursor:pointer
+}
+
+.authBox h2{
+  margin:0 0 8px;
+  font-size:30px;
+  letter-spacing:-1px
+}
+
+.authBox p{
+  color:#777;
+  font-size:14px;
+  line-height:1.5
+}
+
+.authInput{
+  width:100%;
+  padding:13px 14px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin-top:10px;
+  font-size:14px;
+  outline:none
+}
+
+.authInput:focus{
+  border-color:#111
+}
+
+.authButton{
+  width:100%;
+  margin-top:14px;
+  padding:13px;
+  border:0;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer
+}
+
+.authSwitch{
+  border:0;
+  background:none;
+  cursor:pointer;
+  text-decoration:underline;
+  margin-top:15px;
+  color:#555
+}
+
+.authMessage{
+  margin-top:14px;
+  font-size:13px;
+  color:#666
+}
+
+.userInfo{
+  display:none;
+  align-items:center;
+  gap:8px
+}
+
+.userEmail{
+  font-size:13px;
+  color:#555;
+  max-width:180px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap
+}
+
+@media(max-width:900px){
+  .hero{
+    grid-template-columns:1fr
+  }
+
+  .grid{
+    grid-template-columns:repeat(2,1fr)
+  }
+
+  .links{
+    display:none
+  }
+
+  .sell{
+    flex-direction:column;
+    align-items:flex-start
+  }
+}
+
+@media(max-width:560px){
+  .grid{
+    grid-template-columns:1fr
+  }
+
+  .hero{
+    padding-top:55px
+  }
+
+  .hero h1{
+    letter-spacing:-3px
+  }
+
+  .visual{
+    height:330px
+  }
+
+  .sell{
+    padding:35px
+  }
+
+  .sell h2{
+    font-size:32px
+  }
+}
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
+
+<!-- NAVEGACIÓN -->
+
 <nav class="nav">
-  <div class="logo">Du<span>Ality</span></div>
-  <div class="links"><a href="#discover">Discover</a><a href="#categories">Categories</a><a href="#sell">Sell</a></div>
-  <div class="actions"><button class="btn" onclick="alert('Sign in will be connected in the next version.')">Sign in</button><button class="btn dark" onclick="document.querySelector('#sell').scrollIntoView({behavior:'smooth'})">Start selling</button></div>
+
+  <div class="logo">
+    Du<span>Ality</span>
+  </div>
+
+  <div class="links">
+    <a href="#discover">Discover</a>
+    <a href="#categories">Categories</a>
+    <a href="#sell">Sell</a>
+  </div>
+
+  <div class="actions">
+
+    <div id="loggedOutButtons">
+      <button class="btn" onclick="openAuth()">
+        Sign in
+      </button>
+
+      <button class="btn dark" onclick="document.querySelector('#sell').scrollIntoView({behavior:'smooth'})">
+        Start selling
+      </button>
+    </div>
+
+    <div id="loggedInButtons" class="userInfo">
+      <span id="userEmail" class="userEmail"></span>
+
+      <button class="btn" onclick="logout()">
+        Log out
+      </button>
+    </div>
+
+  </div>
+
 </nav>
+
+
+<!-- HERO -->
+
 <header class="hero">
+
   <div>
-    <div class="eyebrow">A marketplace for independent creators</div>
-    <h1>Buy. Sell.<br><i>Create.</i></h1>
-    <p>Discover original digital products from creators around the world — or turn what you create into something people can own.</p>
-    <div class="heroBtns"><button class="btn dark" onclick="document.querySelector('#discover').scrollIntoView({behavior:'smooth'})">Explore products</button><button class="btn" onclick="document.querySelector('#sell').scrollIntoView({behavior:'smooth'})">Become a seller</button></div>
+
+    <div class="eyebrow">
+      A marketplace for independent creators
+    </div>
+
+    <h1>
+      Buy. Sell.<br>
+      <i>Create.</i>
+    </h1>
+
+    <p>
+      Discover original digital products from creators around the world —
+      or turn what you create into something people can own.
+    </p>
+
+    <div class="heroBtns">
+
+      <button
+        class="btn dark"
+        onclick="document.querySelector('#discover').scrollIntoView({behavior:'smooth'})">
+        Explore products
+      </button>
+
+      <button
+        class="btn"
+        onclick="document.querySelector('#sell').scrollIntoView({behavior:'smooth'})">
+        Become a seller
+      </button>
+
+    </div>
+
   </div>
-  <div class="visual"><div class="orb"></div><div class="card one"><div class="mini">FEATURED</div><strong>Midnight Collection</strong><div class="price">$12</div></div><div class="card two"><div class="mini">CREATOR</div><strong>duality.studio</strong></div></div>
+
+  <div class="visual">
+
+    <div class="orb"></div>
+
+    <div class="card one">
+      <div class="mini">FEATURED</div>
+      <strong>Midnight Collection</strong>
+      <div class="price">$12</div>
+    </div>
+
+    <div class="card two">
+      <div class="mini">CREATOR</div>
+      <strong>duality.studio</strong>
+    </div>
+
+  </div>
+
 </header>
+
+
+<!-- PRODUCTOS -->
+
 <section id="discover">
-  <div class="sectionHead"><div><div class="eyebrow">Curated for you</div><h2>Trending now</h2></div><span class="muted">Explore →</span></div>
-  <div class="grid">
-    <article class="product"><div class="thumb">NOIR PACK</div><div class="info"><h3>Noir Creator Pack</h3><p>Visual assets · Digital</p><div class="row"><span class="tag">Featured</span><span class="priceSmall">$8</span></div></div></article>
-    <article class="product"><div class="thumb">LUMEN</div><div class="info"><h3>Lumen Presets</h3><p>Photo presets · Digital</p><div class="row"><span class="tag">New</span><span class="priceSmall">$14</span></div></div></article>
-    <article class="product"><div class="thumb">ATLAS</div><div class="info"><h3>Atlas UI Kit</h3><p>Design resources · Digital</p><div class="row"><span class="tag">Popular</span><span class="priceSmall">$19</span></div></div></article>
-    <article class="product"><div class="thumb">NIGHTFALL</div><div class="info"><h3>Nightfall Wallpapers</h3><p>Wallpapers · Digital</p><div class="row"><span class="tag">Aesthetic</span><span class="priceSmall">$3</span></div></div></article>
+
+  <div class="sectionHead">
+
+    <div>
+      <div class="eyebrow">Curated for you</div>
+      <h2>Trending now</h2>
+    </div>
+
+    <span class="muted">
+      Explore →
+    </span>
+
   </div>
+
+  <div class="grid">
+
+    <article class="product">
+
+      <div class="thumb">
+        NOIR PACK
+      </div>
+
+      <div class="info">
+
+        <h3>Noir Creator Pack</h3>
+
+        <p>
+          Visual assets · Digital
+        </p>
+
+        <div class="row">
+
+          <span class="tag">
+            Featured
+          </span>
+
+          <span class="priceSmall">
+            $8
+          </span>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <article class="product">
+
+      <div class="thumb">
+        LUMEN
+      </div>
+
+      <div class="info">
+
+        <h3>Lumen Presets</h3>
+
+        <p>
+          Photo presets · Digital
+        </p>
+
+        <div class="row">
+
+          <span class="tag">
+            New
+          </span>
+
+          <span class="priceSmall">
+            $14
+          </span>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <article class="product">
+
+      <div class="thumb">
+        ATLAS
+      </div>
+
+      <div class="info">
+
+        <h3>Atlas UI Kit</h3>
+
+        <p>
+          Design resources · Digital
+        </p>
+
+        <div class="row">
+
+          <span class="tag">
+            Popular
+          </span>
+
+          <span class="priceSmall">
+            $19
+          </span>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <article class="product">
+
+      <div class="thumb">
+        NIGHTFALL
+      </div>
+
+      <div class="info">
+
+        <h3>Nightfall Wallpapers</h3>
+
+        <p>
+          Wallpapers · Digital
+        </p>
+
+        <div class="row">
+
+          <span class="tag">
+            Aesthetic
+          </span>
+
+          <span class="priceSmall">
+            $3
+          </span>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </div>
+
 </section>
+
+
+<!-- CATEGORÍAS -->
+
 <section id="categories">
-  <div class="sectionHead"><div><div class="eyebrow">Browse</div><h2>Explore categories</h2></div></div>
-  <div class="categories"><div class="cat">🎨 Design</div><div class="cat">📸 Photography</div><div class="cat">🎵 Music</div><div class="cat">📚 E-books</div><div class="cat">🧩 Templates</div><div class="cat">✨ Art</div><div class="cat">💻 Software</div></div>
+
+  <div class="sectionHead">
+
+    <div>
+
+      <div class="eyebrow">
+        Browse
+      </div>
+
+      <h2>
+        Explore categories
+      </h2>
+
+    </div>
+
+  </div>
+
+  <div class="categories">
+
+    <div class="cat">🎨 Design</div>
+    <div class="cat">📸 Photography</div>
+    <div class="cat">🎵 Music</div>
+    <div class="cat">📚 E-books</div>
+    <div class="cat">🧩 Templates</div>
+    <div class="cat">✨ Art</div>
+    <div class="cat">💻 Software</div>
+
+  </div>
+
 </section>
+
+
+<!-- VENDE -->
+
 <section id="sell">
-  <div class="sell"><div><div class="eyebrow">For creators</div><h2>Make your work worth finding.</h2><p>Set up your storefront, publish products and build an audience around what you create. DuAlity is designed to put creators first.</p></div><button class="btn" onclick="alert('Seller registration will be connected in the next version.')">Start selling →</button></div>
+
+  <div class="sell">
+
+    <div>
+
+      <div class="eyebrow">
+        For creators
+      </div>
+
+      <h2>
+        Make your work worth finding.
+      </h2>
+
+      <p>
+        Set up your storefront, publish products and build an audience
+        around what you create. DuAlity is designed to put creators first.
+      </p>
+
+    </div>
+
+    <button
+      class="btn"
+      onclick="openAuth()">
+      Start selling →
+    </button>
+
+  </div>
+
 </section>
-<footer><span>© 2026 DuAlity</span><span>Buy. Sell. Create.</span></footer>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+  <span>
+    © 2026 DuAlity
+  </span>
+
+  <span>
+    Buy. Sell. Create.
+  </span>
+
+</footer>
+
+
+<!-- VENTANA DE INICIO DE SESIÓN / REGISTRO -->
+
+<div id="authOverlay" class="authOverlay">
+
+  <div class="authBox">
+
+    <button
+      class="authClose"
+      onclick="closeAuth()">
+      ×
+    </button>
+
+    <h2 id="authTitle">
+      Sign in
+    </h2>
+
+    <p id="authDescription">
+      Sign in to your DuAlity account.
+    </p>
+
+    <input
+      id="authEmail"
+      class="authInput"
+      type="email"
+      placeholder="Email"
+      autocomplete="email">
+
+    <input
+      id="authPassword"
+      class="authInput"
+      type="password"
+      placeholder="Password"
+      autocomplete="current-password">
+
+    <button
+      id="authButton"
+      class="authButton"
+      onclick="handleAuth()">
+      Sign in
+    </button>
+
+    <button
+      id="authSwitch"
+      class="authSwitch"
+      onclick="switchAuthMode()">
+      Don't have an account? Create one
+    </button>
+
+    <div
+      id="authMessage"
+      class="authMessage">
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- CONFIGURACIÓN DE SUPABASE -->
+
+<script>
+
+const SUPABASE_URL =
+'https://diinhxzfosetnoickvyd.supabase.co';
+
+
+/*
+  =====================================================
+  PEGA AQUÍ TU PUBLISHABLE KEY
+  =====================================================
+*/
+
+const SUPABASE_KEY =
+'sb_publishable_6sfYPqRKxr--HH8h95SkRQ_PWUPCeCG';
+
+
+const supabaseClient =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================================
+   ESTADO DE AUTENTICACIÓN
+========================================= */
+
+let authMode = 'login';
+
+
+/* =========================================
+   ABRIR VENTANA
+========================================= */
+
+function openAuth(){
+
+  document.getElementById('authOverlay').style.display = 'flex';
+
+  document.getElementById('authMessage').textContent = '';
+
+}
+
+
+/* =========================================
+   CERRAR VENTANA
+========================================= */
+
+function closeAuth(){
+
+  document.getElementById('authOverlay').style.display = 'none';
+
+}
+
+
+/* =========================================
+   CAMBIAR ENTRE LOGIN Y REGISTRO
+========================================= */
+
+function switchAuthMode(){
+
+  if(authMode === 'login'){
+
+    authMode = 'signup';
+
+    document.getElementById('authTitle').textContent =
+    'Create account';
+
+    document.getElementById('authDescription').textContent =
+    'Create your DuAlity account.';
+
+    document.getElementById('authButton').textContent =
+    'Create account';
+
+    document.getElementById('authSwitch').textContent =
+    'Already have an account? Sign in';
+
+  }else{
+
+    authMode = 'login';
+
+    document.getElementById('authTitle').textContent =
+    'Sign in';
+
+    document.getElementById('authDescription').textContent =
+    'Sign in to your DuAlity account.';
+
+    document.getElementById('authButton').textContent =
+    'Sign in';
+
+    document.getElementById('authSwitch').textContent =
+    "Don't have an account? Create one";
+
+  }
+
+  document.getElementById('authMessage').textContent = '';
+
+}
+
+
+/* =========================================
+   LOGIN / REGISTRO
+========================================= */
+
+async function handleAuth(){
+
+  const email =
+  document.getElementById('authEmail').value.trim();
+
+  const password =
+  document.getElementById('authPassword').value;
+
+  const message =
+  document.getElementById('authMessage');
+
+
+  if(!email || !password){
+
+    message.textContent =
+    'Please enter your email and password.';
+
+    return;
+
+  }
+
+
+  if(password.length < 6){
+
+    message.textContent =
+    'Password must contain at least 6 characters.';
+
+    return;
+
+  }
+
+
+  document.getElementById('authButton').disabled = true;
+
+
+  try{
+
+    if(authMode === 'login'){
+
+      const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+      if(error){
+
+        message.textContent =
+        error.message;
+
+        return;
+
+      }
+
+
+      message.textContent =
+      'Successfully signed in.';
+
+      closeAuth();
+
+
+    }else{
+
+      const { data, error } =
+      await supabaseClient.auth.signUp({
+
+        email: email,
+
+        password: password
+
+      });
+
+
+      if(error){
+
+        message.textContent =
+        error.message;
+
+        return;
+
+      }
+
+
+      message.textContent =
+      'Account created. Check your email to confirm your account.';
+
+    }
+
+  }catch(error){
+
+    message.textContent =
+    'Something went wrong. Please try again.';
+
+    console.error(error);
+
+  }finally{
+
+    document.getElementById('authButton').disabled = false;
+
+  }
+
+}
+
+
+/* =========================================
+   CERRAR SESIÓN
+========================================= */
+
+async function logout(){
+
+  const { error } =
+  await supabaseClient.auth.signOut();
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+  updateUserInterface(null);
+
+}
+
+
+/* =========================================
+   ACTUALIZAR INTERFAZ
+========================================= */
+
+function updateUserInterface(user){
+
+  const loggedOut =
+  document.getElementById('loggedOutButtons');
+
+  const loggedIn =
+  document.getElementById('loggedInButtons');
+
+  const userEmail =
+  document.getElementById('userEmail');
+
+
+  if(user){
+
+    loggedOut.style.display = 'none';
+
+    loggedIn.style.display = 'flex';
+
+    userEmail.textContent =
+    user.email || '';
+
+  }else{
+
+    loggedOut.style.display = 'block';
+
+    loggedIn.style.display = 'none';
+
+    userEmail.textContent = '';
+
+  }
+
+}
+
+
+/* =========================================
+   COMPROBAR SESIÓN ACTUAL
+========================================= */
+
+async function checkSession(){
+
+  const {
+    data: { session }
+  } =
+  await supabaseClient.auth.getSession();
+
+  if(session){
+
+    updateUserInterface(session.user);
+
+  }else{
+
+    updateUserInterface(null);
+
+  }
+
+}
+
+
+/* =========================================
+   ESCUCHAR CAMBIOS DE SESIÓN
+========================================= */
+
+supabaseClient.auth.onAuthStateChange(
+  (event, session) => {
+
+    if(session){
+
+      updateUserInterface(session.user);
+
+    }else{
+
+      updateUserInterface(null);
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   INICIAR
+========================================= */
+
+checkSession();
+
+</script>
+
 </body>
 </html>
